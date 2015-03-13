@@ -1,9 +1,9 @@
 Originated: March 10, 2015
 @author
-Jonathan Wilson
-Cheng-Fang Shih
-Jacob Fleming
-Scott Muhl
+Jonathan Wilson, 
+Cheng-Fang Shih, 
+Jacob Fleming, 
+Scott Muhl, 
 Anibar Bonilla
 
 *****DISCLAMER*****
