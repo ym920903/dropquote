@@ -21,7 +21,13 @@ import java.util.logging.Logger;
 
 
 
+
+
 import javax.imageio.ImageIO;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.FloatControl;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -85,6 +91,29 @@ final static Logger LOGGER = Logger.getLogger(FileInterface.class
 	public ImageIcon loadImageIcon(String path){
 		return new ImageIcon(Toolkit.getDefaultToolkit().getImage(getClass().getClassLoader().getResource(path)));
 	}
+	
+	public void playSound(String fileName, boolean loop) {
+		 
+		   
+		      try {
+		        Clip clip = AudioSystem.getClip();
+		        File file = new File(fileName);
+		        AudioInputStream inputStream = AudioSystem.getAudioInputStream(file);
+		        clip.open(inputStream);
+		        if(loop){
+		        	clip.loop(Clip.LOOP_CONTINUOUSLY);
+		        }
+		        FloatControl gainControl = 
+		        	    (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
+		        	gainControl.setValue(-40.0f); // Reduce volume by 10 decibels
+		        clip.start(); 
+		      } catch (Exception e) {
+		        System.err.println(e.getMessage());
+		      }
+		      
+		    
+		 
+		}
 		
 	
 }

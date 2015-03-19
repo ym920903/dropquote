@@ -74,6 +74,7 @@ public class GameBoard extends JPanel {
 	ImageIcon buttonPressedIcon;
 	ImageIcon buttonOffIcon;
 	ImageIcon buttonOnIcon;
+	ImageIcon buttonEmptyIcon;
 	
 	
 	FileInterface fileInterface = new FileInterface();
@@ -137,8 +138,8 @@ public class GameBoard extends JPanel {
 		buttonPressedIcon = fileInterface.loadImageIcon(Config.BUTTON_PRESSED_IMAGE);
 		buttonOnIcon = fileInterface.loadImageIcon(Config.BUTTON_ON_IMAGE);
 		buttonOffIcon = fileInterface.loadImageIcon(Config.BUTTON_OFF_IMAGE);
-		
-		string = "This is a test of the emergency Broadcast System";
+		buttonEmptyIcon = fileInterface.loadImageIcon(Config.BUTTON_EMPTY_IMAGE);
+		string = "This is a test of the emergency Broadcast System ";
 		processor = new WordProcessor(string.toUpperCase());
 		wordArray = processor.splitWord(NO_COLUMNS);
 		sortedArray = processor.randomizeColumns(wordArray);
@@ -149,6 +150,7 @@ public class GameBoard extends JPanel {
 	 * Create the interface.
 	 */
 	public void init(){
+		//fileInterface.playSound(Config.THEME, true);
 		createSolutionPanel();
 		createCluePanel();
 		populateCluePanel();
@@ -194,19 +196,21 @@ public class GameBoard extends JPanel {
 			//clueButtons[i/NO_COLUMNS][i%NO_COLUMNS].addActionListener(new ClueButtonActionListener());
 			clueButtons[i/NO_COLUMNS][i%NO_COLUMNS].setFont(fileInterface.getFont());
 			clueButtons[i/NO_COLUMNS][i%NO_COLUMNS].setIcon(buttonOffIcon);
-			clueButtons[i/NO_COLUMNS][i%NO_COLUMNS].addMouseListener(new ButtonMouseListener());
+			clueButtons[i/NO_COLUMNS][i%NO_COLUMNS].addMouseListener(new ClueButtonMouseListener());
+			
+			
 			clueButtons[i/NO_COLUMNS][i%NO_COLUMNS].setHorizontalTextPosition(JButton.CENTER);
 			clueButtons[i/NO_COLUMNS][i%NO_COLUMNS].setVerticalTextPosition(JButton.CENTER);
 			//sets the borders around buttons for L&F
 			if(i+1 == (NO_ROWS * NO_COLUMNS)){
-				clueButtons[i/NO_COLUMNS][i%NO_COLUMNS].setBorder(BorderFactory.createMatteBorder(1,1,1,1,Color.black));
+				clueButtons[i/NO_COLUMNS][i%NO_COLUMNS].setBorder(BorderFactory.createMatteBorder(1,1,1,1,Color.GRAY));
 			}
 			else if(i/NO_COLUMNS == NO_ROWS -1){
-				clueButtons[i/NO_COLUMNS][i%NO_COLUMNS].setBorder(BorderFactory.createMatteBorder(1,1,1,0,Color.black));
+				clueButtons[i/NO_COLUMNS][i%NO_COLUMNS].setBorder(BorderFactory.createMatteBorder(1,1,1,0,Color.GRAY));
 			}else if((i+1)%NO_COLUMNS == 0){
-				clueButtons[i/NO_COLUMNS][i%NO_COLUMNS].setBorder(BorderFactory.createMatteBorder(1,1,0,1,Color.black));
+				clueButtons[i/NO_COLUMNS][i%NO_COLUMNS].setBorder(BorderFactory.createMatteBorder(1,1,0,1,Color.GRAY));
 			}else{
-				clueButtons[i/NO_COLUMNS][i%NO_COLUMNS].setBorder(BorderFactory.createMatteBorder(1,1,0,0,Color.black));
+				clueButtons[i/NO_COLUMNS][i%NO_COLUMNS].setBorder(BorderFactory.createMatteBorder(1,1,0,0,Color.GRAY));
 			}
 			clueButtons[i/NO_COLUMNS][i%NO_COLUMNS].setFocusable(false);
 			clueButtons[i/NO_COLUMNS][i%NO_COLUMNS].setText(sortedArray[i/NO_COLUMNS][i%NO_COLUMNS]);
@@ -222,6 +226,7 @@ public class GameBoard extends JPanel {
 		solution_panel.setLayout(new GridLayout(NO_ROWS, NO_COLUMNS, 0, 0));
 		//instantiates an array of buttons
 		solutionButtons = new MyButton[NO_ROWS][NO_COLUMNS];
+		
 		//creates each button and adds it to the panel
 		for(int i = 0; i < NO_ROWS*NO_COLUMNS; i++){
 			solutionButtons[i/NO_COLUMNS][i%NO_COLUMNS] = new MyButton(i/NO_COLUMNS, i%NO_COLUMNS, SOLUTION_BUTTON);
@@ -229,7 +234,20 @@ public class GameBoard extends JPanel {
 			solutionButtons[i/NO_COLUMNS][i%NO_COLUMNS].setFocusable(false);
 			solutionButtons[i/NO_COLUMNS][i%NO_COLUMNS].setIsEmpty(true);
 			solutionButtons[i/NO_COLUMNS][i%NO_COLUMNS].setFont(fileInterface.getFont());
-			solutionButtons[i/NO_COLUMNS][i%NO_COLUMNS].addActionListener(new SolutionButtonActionListener());
+			solutionButtons[i/NO_COLUMNS][i%NO_COLUMNS].addMouseListener(new SolutionButtonMouseListener());
+			solutionButtons[i/NO_COLUMNS][i%NO_COLUMNS].setIcon(buttonEmptyIcon);
+			solutionButtons[i/NO_COLUMNS][i%NO_COLUMNS].setVerticalTextPosition(JButton.CENTER);
+			solutionButtons[i/NO_COLUMNS][i%NO_COLUMNS].setHorizontalTextPosition(JButton.CENTER);
+			if(i+1 == (NO_ROWS * NO_COLUMNS)){
+				solutionButtons[i/NO_COLUMNS][i%NO_COLUMNS].setBorder(BorderFactory.createMatteBorder(1,1,1,1,Color.GRAY));
+			}
+			else if(i/NO_COLUMNS == NO_ROWS -1){
+				solutionButtons[i/NO_COLUMNS][i%NO_COLUMNS].setBorder(BorderFactory.createMatteBorder(1,1,1,0,Color.GRAY));
+			}else if((i+1)%NO_COLUMNS == 0){
+				solutionButtons[i/NO_COLUMNS][i%NO_COLUMNS].setBorder(BorderFactory.createMatteBorder(1,1,0,1,Color.GRAY));
+			}else{
+				solutionButtons[i/NO_COLUMNS][i%NO_COLUMNS].setBorder(BorderFactory.createMatteBorder(1,1,0,0,Color.GRAY));
+			}
 			if(i < processor.getLogicalChars().size()){
 				if(processor.getLogicalChars().get(i).equals(" ")){
 					solutionButtons[i/NO_COLUMNS][i%NO_COLUMNS].setText(" ");
@@ -284,6 +302,7 @@ public class GameBoard extends JPanel {
 				sortedArray[i][button.getColumn()] = button.getText();
 				button.setText(" ");
 				button.setIsEmpty(true);
+				button.setIcon(buttonEmptyIcon);
 				break;
 			}
 		}
@@ -291,8 +310,8 @@ public class GameBoard extends JPanel {
 	public void quickAddToSolutionPanel(MyButton button){
 		for (int i = 0 ; i < NO_ROWS ; i++){
 			if(solutionButtons[i][button.getColumn()].isEmpty() && solutionButtons[i][button.getColumn()].isEnabled()){
-				
 				solutionButtons[i][button.getColumn()].setIsEmpty(false);
+				solutionButtons[i][button.getColumn()].setIcon(buttonOffIcon);
 				solutionButtons[i][button.getColumn()].setText(button.getText());
 				button.setClick();
 				sortedArray[button.getRow()][button.getColumn()] = " ";
@@ -380,6 +399,7 @@ public class GameBoard extends JPanel {
 					}else{
 						//otherwise removes first the click
 						clueButtons[i/NO_COLUMNS][i%NO_COLUMNS].setClick();
+						
 						//adds the second click if the button has a letter
 						if(!((MyButton)e.getSource()).isEmpty()){
 							((MyButton)e.getSource()).setClick();
@@ -401,7 +421,8 @@ public class GameBoard extends JPanel {
 						return;
 					//otherwise if they are in the same column flip the letter values
 					}else if(solutionButtons[i/NO_COLUMNS][i%NO_COLUMNS].getColumn() == ((MyButton)e.getSource()).getColumn()){
-						flipValues(((MyButton)e.getSource()),solutionButtons[i/NO_COLUMNS][i%NO_COLUMNS]);	
+						flipValues(((MyButton)e.getSource()),solutionButtons[i/NO_COLUMNS][i%NO_COLUMNS]);
+						
 						solutionButtons[i/NO_COLUMNS][i%NO_COLUMNS].setClick();		
 					return;
 					}else{
@@ -448,7 +469,7 @@ public class GameBoard extends JPanel {
 		}
 	}
 	
-	private class ButtonMouseListener implements MouseListener{
+	private class ClueButtonMouseListener implements MouseListener{
 
 		@Override
 		public void mouseClicked(MouseEvent e) {
@@ -458,18 +479,42 @@ public class GameBoard extends JPanel {
 
 		@Override
 		public void mouseEntered(MouseEvent e) {
-			
-			
+			boolean foundClick = false;
+			for (int i = 0 ; i < NO_ROWS*NO_COLUMNS ; i++){
+				//check if a clue button is already clicked
+				if(solutionButtons[i/NO_COLUMNS][i%NO_COLUMNS].isClicked() && !((MyButton)e.getSource()).isEmpty()){
+					if(((MyButton)e.getSource()).getColumn() == clueButtons[i/NO_COLUMNS][i%NO_COLUMNS].getColumn()){
+						((MyButton)e.getSource()).setBorder(BorderFactory.createLineBorder(Color.RED, 2));
+						
+					}
+					foundClick = true;
+				}
+			}
+			if(!((MyButton)e.getSource()).isEmpty() && !foundClick){
+				((MyButton)e.getSource()).setBorder(BorderFactory.createLineBorder(Color.YELLOW, 2));
+			}
 		}
 
 		@Override
 		public void mouseExited(MouseEvent e) {
+			
+				if(((MyButton)e.getSource()).getRow()+1 == NO_ROWS && ((MyButton)e.getSource()).getColumn()+1 == NO_COLUMNS){
+					((MyButton)e.getSource()).setBorder(BorderFactory.createMatteBorder(1,1,1,1,Color.GRAY));
+				}
+				else if(((MyButton)e.getSource()).getRow()+1 == NO_ROWS){
+					((MyButton)e.getSource()).setBorder(BorderFactory.createMatteBorder(1,1,1,0,Color.GRAY));
+				}else if(((MyButton)e.getSource()).getColumn()+1 == NO_COLUMNS){
+					((MyButton)e.getSource()).setBorder(BorderFactory.createMatteBorder(1,1,0,1,Color.GRAY));
+				}else{
+					((MyButton)e.getSource()).setBorder(BorderFactory.createMatteBorder(1,1,0,0,Color.GRAY));
+				}
 			
 			
 		}
 
 		@Override
 		public void mousePressed(MouseEvent e) {
+			
 			((MyButton)e.getSource()).setIcon(buttonPressedIcon);
 			
 		}
@@ -490,6 +535,7 @@ public class GameBoard extends JPanel {
 				((MyButton)e.getSource()).setIcon(buttonOffIcon);
 				return;
 			}
+			fileInterface.playSound(Config.BUTTON_CLICKED_SOUND, false);
 			for (int i = 0 ; i < NO_ROWS*NO_COLUMNS ; i++){
 				if(clueButtons[i/NO_COLUMNS][i%NO_COLUMNS].isClicked()){
 					//check if a clue button is already clicked
@@ -498,6 +544,9 @@ public class GameBoard extends JPanel {
 						if(System.currentTimeMillis() - clueButtons[i/NO_COLUMNS][i%NO_COLUMNS].getTimeOfLastClick() <= 500){
 							quickAddToSolutionPanel(clueButtons[i/NO_COLUMNS][i%NO_COLUMNS]);
 							populateCluePanel();
+							if(((MyButton)e.getSource()).isEmpty()){
+								mouseExited(e);
+							}
 						}else{
 							((MyButton)e.getSource()).setClick();
 							((MyButton)e.getSource()).setIcon(buttonOffIcon);
@@ -518,12 +567,20 @@ public class GameBoard extends JPanel {
 						//solutionButtons[i/NO_COLUMNS][i%NO_COLUMNS].setText(((MyButton)e.getSource()).getText());
 						//solutionButtons[i/NO_COLUMNS][i%NO_COLUMNS].setIsEmpty(false);
 						flipValues(solutionButtons[i/NO_COLUMNS][i%NO_COLUMNS],(MyButton)e.getSource());
+							((MyButton)e.getSource()).setBorder(BorderFactory.createLineBorder(Color.YELLOW, 2));
+						if(solutionButtons[i/NO_COLUMNS][i%NO_COLUMNS].isEmpty()){
+							solutionButtons[i/NO_COLUMNS][i%NO_COLUMNS].setIcon(buttonEmptyIcon);
+						}else{
+							solutionButtons[i/NO_COLUMNS][i%NO_COLUMNS].setIcon(buttonOffIcon);
+						}
 						((MyButton)e.getSource()).setIcon(buttonOffIcon);
 						return;			
 					}else{
 						//otherwise remove the first click and add the second
 						solutionButtons[i/NO_COLUMNS][i%NO_COLUMNS].setClick();
-						((MyButton)e.getSource()).setClick();
+						solutionButtons[i/NO_COLUMNS][i%NO_COLUMNS].setIcon(buttonOffIcon);
+						
+						((MyButton)e.getSource()).setIcon(buttonOffIcon);
 						return;
 					}
 				}
@@ -533,6 +590,167 @@ public class GameBoard extends JPanel {
 			((MyButton)e.getSource()).setClick();
 			
 			// TODO Auto-generated method stub
+			
+		}
+	
+	}
+	
+	private class SolutionButtonMouseListener implements MouseListener{
+
+		@Override
+		public void mouseClicked(MouseEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		public void mouseEntered(MouseEvent e) {
+			boolean foundClick = false;
+			for (int i = 0 ; i < NO_ROWS*NO_COLUMNS ; i++){
+				//check if a clue button is already clicked
+				if(clueButtons[i/NO_COLUMNS][i%NO_COLUMNS].isClicked()){
+					if(((MyButton)e.getSource()).getColumn() == clueButtons[i/NO_COLUMNS][i%NO_COLUMNS].getColumn()){
+						((MyButton)e.getSource()).setBorder(BorderFactory.createLineBorder(Color.RED, 2));
+						
+					}
+					foundClick = true;
+				}else if(solutionButtons[i/NO_COLUMNS][i%NO_COLUMNS].isClicked() && 
+						((MyButton)e.getSource()).getColumn() == solutionButtons[i/NO_COLUMNS][i%NO_COLUMNS].getColumn() &&
+						((MyButton)e.getSource()).getRow() != solutionButtons[i/NO_COLUMNS][i%NO_COLUMNS].getRow()){
+						((MyButton)e.getSource()).setBorder(BorderFactory.createLineBorder(Color.RED, 2));
+						foundClick = true;
+				}
+			}
+			if(!((MyButton)e.getSource()).isEmpty() && !foundClick){
+				((MyButton)e.getSource()).setBorder(BorderFactory.createLineBorder(Color.YELLOW, 2));
+			}
+		}
+
+		@Override
+		public void mouseExited(MouseEvent e) {
+			
+				if(((MyButton)e.getSource()).getRow()+1 == NO_ROWS && ((MyButton)e.getSource()).getColumn()+1 == NO_COLUMNS){
+					((MyButton)e.getSource()).setBorder(BorderFactory.createMatteBorder(1,1,1,1,Color.GRAY));
+				}
+				else if(((MyButton)e.getSource()).getRow()+1 == NO_ROWS){
+					((MyButton)e.getSource()).setBorder(BorderFactory.createMatteBorder(1,1,1,0,Color.GRAY));
+				}else if(((MyButton)e.getSource()).getColumn()+1 == NO_COLUMNS){
+					((MyButton)e.getSource()).setBorder(BorderFactory.createMatteBorder(1,1,0,1,Color.GRAY));
+				}else{
+					((MyButton)e.getSource()).setBorder(BorderFactory.createMatteBorder(1,1,0,0,Color.GRAY));
+				}
+			
+			
+		}
+
+		@Override
+		public void mousePressed(MouseEvent e) {
+			((MyButton)e.getSource()).setIcon(buttonPressedIcon);
+		}
+
+		@Override
+		public void mouseReleased(MouseEvent e) {
+			if(!((MyButton)e.getSource()).isEnabled()){
+				((MyButton)e.getSource()).setIcon(buttonOffIcon);
+				return;
+			}
+			double mouseX = MouseInfo.getPointerInfo().getLocation().getX();
+			double mouseY = MouseInfo.getPointerInfo().getLocation().getY();
+			double buttonX = ((MyButton)e.getSource()).getLocationOnScreen().getX();
+			double buttonY = ((MyButton)e.getSource()).getLocationOnScreen().getY();
+			double width = ((MyButton)e.getSource()).getWidth();
+			double height = ((MyButton)e.getSource()).getHeight();
+			if(mouseX < buttonX || mouseY < buttonY || mouseX > buttonX + width || mouseY > buttonY+height){
+				((MyButton)e.getSource()).setIcon(buttonOffIcon);
+				return;
+			}
+
+			//for all buttons
+			fileInterface.playSound(Config.BUTTON_CLICKED_SOUND, false);
+			for (int i = 0 ; i < NO_ROWS*NO_COLUMNS ; i++){
+				//check if a clue button is already clicked
+				if(clueButtons[i/NO_COLUMNS][i%NO_COLUMNS].isClicked()){
+					//if they are in the same column
+					if(((MyButton)e.getSource()).getColumn() == clueButtons[i/NO_COLUMNS][i%NO_COLUMNS].getColumn()){
+						//swap the letters
+						clueButtons[i/NO_COLUMNS][i%NO_COLUMNS].setClick();
+						sortedArray[i/NO_COLUMNS][i%NO_COLUMNS] = ((MyButton)e.getSource()).getText();									
+						flipValues(clueButtons[i/NO_COLUMNS][i%NO_COLUMNS],(MyButton)e.getSource());
+						((MyButton)e.getSource()).setBorder(BorderFactory.createLineBorder(Color.YELLOW, 2));
+						((MyButton)e.getSource()).setIcon(buttonOffIcon);
+						populateCluePanel();
+						return;							
+					}else{
+						//otherwise removes first the click
+						clueButtons[i/NO_COLUMNS][i%NO_COLUMNS].setClick();
+						clueButtons[i/NO_COLUMNS][i%NO_COLUMNS].setIcon(buttonOffIcon);
+						//adds the second click if the button has a letter
+						if(!((MyButton)e.getSource()).isEmpty()){
+							
+							((MyButton)e.getSource()).setIcon(buttonOffIcon);
+							return;
+						}else{
+							((MyButton)e.getSource()).setIcon(buttonEmptyIcon);
+							return;
+						}
+						
+					}
+				//if a solution button is already clicked
+				}else if(solutionButtons[i/NO_COLUMNS][i%NO_COLUMNS].isClicked()){
+					//if it is the same button, add the letter back to the clue panel
+					if(solutionButtons[i/NO_COLUMNS][i%NO_COLUMNS].getRow() == ((MyButton)e.getSource()).getRow() && 
+							solutionButtons[i/NO_COLUMNS][i%NO_COLUMNS].getColumn() == ((MyButton)e.getSource()).getColumn()){
+						if(System.currentTimeMillis() - solutionButtons[i/NO_COLUMNS][i%NO_COLUMNS].getTimeOfLastClick() <= 500){
+							((MyButton)e.getSource()).setClick();
+							((MyButton)e.getSource()).setIcon(buttonEmptyIcon);
+							addToCluePanel(((MyButton)e.getSource()));
+							if(((MyButton)e.getSource()).isEmpty()){
+								mouseExited(e);
+							}
+							populateCluePanel();
+						}else{
+							((MyButton)e.getSource()).setClick();
+							((MyButton)e.getSource()).setIcon(buttonOffIcon);
+						}
+						return;
+					//otherwise if they are in the same column flip the letter values
+					}else if(solutionButtons[i/NO_COLUMNS][i%NO_COLUMNS].getColumn() == ((MyButton)e.getSource()).getColumn()){
+						flipValues(((MyButton)e.getSource()),solutionButtons[i/NO_COLUMNS][i%NO_COLUMNS]);	
+						((MyButton)e.getSource()).setBorder(BorderFactory.createLineBorder(Color.YELLOW, 2));
+						solutionButtons[i/NO_COLUMNS][i%NO_COLUMNS].setClick();
+						((MyButton)e.getSource()).setIcon(buttonOffIcon);
+						if(solutionButtons[i/NO_COLUMNS][i%NO_COLUMNS].isEmpty()){
+							solutionButtons[i/NO_COLUMNS][i%NO_COLUMNS].setIcon(buttonEmptyIcon);	
+						}else{
+							solutionButtons[i/NO_COLUMNS][i%NO_COLUMNS].setIcon(buttonOffIcon);	
+						}
+					return;
+					}else{
+						//otherwise remove first click
+						solutionButtons[i/NO_COLUMNS][i%NO_COLUMNS].setClick();
+						solutionButtons[i/NO_COLUMNS][i%NO_COLUMNS].setIcon(buttonOffIcon);
+						
+						//add a click if a letter is present
+						if(!((MyButton)e.getSource()).isEmpty()){
+							((MyButton)e.getSource()).setClick();
+							((MyButton)e.getSource()).setIcon(buttonOnIcon);
+							return;
+						}
+						
+					}
+					
+				}
+			}
+			//if nothing else is selected, and the button has a letter, add a click
+			if(!((MyButton)e.getSource()).isEmpty()){
+				((MyButton)e.getSource()).setClick();
+				((MyButton)e.getSource()).setIcon(buttonOnIcon);
+			}else{
+				((MyButton)e.getSource()).setIcon(buttonEmptyIcon);
+			}
+		
+
+			
+		
 			
 		}
 	
@@ -629,7 +847,7 @@ public class GameBoard extends JPanel {
 		
 		public EmptyPanel(){
 			setBackground(Color.black);
-			setBorder(BorderFactory.createMatteBorder(1,1,1,1,Color.white));
+			setBorder(BorderFactory.createMatteBorder(1,1,1,1,Color.GRAY));
 		}
 	}
 }
