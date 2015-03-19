@@ -26,7 +26,9 @@ public class TeluguWordProcessor extends WordProcessor {
 	 * Overloaded constructor that takes the word
 	 * @param a_word
 	 */
+	public TeluguWordProcessor(){
 	
+	}
 	public TeluguWordProcessor(String a_word)
 	{
 		setWord(a_word);

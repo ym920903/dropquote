@@ -77,7 +77,7 @@ final static Logger LOGGER = Logger.getLogger(FileInterface.class
 		
 		try {
 			Font font = Font.createFont(Font.TRUETYPE_FONT,  
-					this.getClass().getClassLoader().getResourceAsStream(Config.fontFile)).deriveFont(35.0f);
+					getClass().getClassLoader().getResourceAsStream(Config.fontFile)).deriveFont(35.0f);
 			return font;
 		} catch (FontFormatException | IOException e) {
 			LOGGER.warning("ERROR: Failed to load font file " + Config.fontFile + "some character may not be displayed");
@@ -93,8 +93,6 @@ final static Logger LOGGER = Logger.getLogger(FileInterface.class
 	}
 	
 	public void playSound(String fileName, boolean loop) {
-		 
-		   
 		      try {
 		        Clip clip = AudioSystem.getClip();
 		        File file = new File(fileName);
@@ -110,10 +108,13 @@ final static Logger LOGGER = Logger.getLogger(FileInterface.class
 		      } catch (Exception e) {
 		        System.err.println(e.getMessage());
 		      }
-		      
-		    
-		 
 		}
+	
+	public ArrayList<Quote> getQuoteCollection(){
+		ArrayList<Quote> list = new ArrayList<Quote>();
+		return list;
+		
+	}
 		
 	
 }
